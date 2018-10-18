@@ -1,5 +1,4 @@
-from app import MegaRestApp, MegaRestAPI
+from app import MegaRestApp
+from api import MegaRestAPI
 
-__all__ = ['MegaRestApp',
-           'MegaRestAPI'
-           ]
+__all__ = [ 'MegaRestApp', 'MegaRestAPI' ]

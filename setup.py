@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="megarest",
-    version="0.0.1",
+    version="0.0.3",
     author="Aakash Sahai",
     author_email="sahaiaakash@gmail.com",
     description=" A REST API to control Arduino Mega over USB Serial",
