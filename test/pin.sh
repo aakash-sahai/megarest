@@ -1,5 +1,5 @@
 curl --header "Content-Type: application/json" \
-  --data '{"type":"digital","mode":"output", "pin": "13" }' \
+  --data '{"type":"digital","xmode":"output", "pin": "13" }' \
   http://localhost:8080/api/pin; echo
 
 curl --header "Content-Type: application/json" \
