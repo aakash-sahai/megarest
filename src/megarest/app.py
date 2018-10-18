@@ -2,6 +2,12 @@ from __future__ import unicode_literals
 from gunicorn.app.base import BaseApplication
 from gunicorn.six import iteritems
 
+
+class Exception400(Exception):
+    def __init__(self, msg):
+        Exception.__init__(self, msg)
+
+
 class MegaRestApp(BaseApplication):
     connection = None
 

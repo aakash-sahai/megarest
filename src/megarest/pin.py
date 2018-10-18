@@ -1,48 +1,42 @@
 import falcon
 import json
 from megapy import DigitalPin, AnalogPin
-from app import MegaRestApp
+from app import MegaRestApp, Exception400
 import traceback
-
-class Exception400(Exception):
-
-    def __init__(self, msg):
-        Exception.__init__(self, msg)
 
 
 class PinResource(object):
     pins = {}
+
     def __init__(self, conn):
         self.connection = conn
 
-    def validate(self, req, resp, name):
-        print "Received {} {} request with params {}".format(req.method, req.path, req.params)
-        if name is None:
-            raise Exception400("A pin name must be provided")
-        elif name not in PinResource.pins:
-            raise Exception400("Pin {} does not exist".format(name))
-
-    def on_get(self, req, resp, name = None):
+    def on_get(self, req, resp, name = None, cmd = None, arg = None):
         try:
-            self.validate(req, resp, name)
-            resp.status = falcon.HTTP_200
-            resp.media = { "error" : None, "value" : PinResource.pins[name].value }
-        except Exception400 as ex:
-            resp.status = falcon.HTTP_400
-            resp.media = { "error" : str(ex) }
-        except Exception as ex:
-            resp.status = falcon.HTTP_500
-            resp.media = { "error" : str(ex), "trace": traceback.format_exc() }
+            print "Received {} {} request with params {}".format(req.method, req.path, req.params)
+            if name is None:
+                raise Exception400("A pin name must be provided")
+            elif name not in PinResource.pins:
+                raise Exception400("Pin {} does not exist".format(name))
 
-    def on_put(self, req, resp, name = None):
-        try:
-            self.validate(req, resp, name)
-            value = req.media.get("value")
-            if value is None:
-                raise Exception400("Missing value")
-            PinResource.pins[name].value = value
+            pin = PinResource.pins[name]
+            if arg is not None and pin.__class__ == AnalogPin:
+                raise Exception400("Cannot set value for an analog pin")
+
+            if cmd is None:
+                cmd = 'value'
+            if cmd == 'value':
+                if arg is not None:
+                    pin.value = arg
+                value = pin.value
+            elif cmd == 'pin':
+                value = pin.pin
+            elif cmd == 'mode':
+                value = pin.mode
+            else:
+                raise Exception400("Command {} is invalid".format(cmd))
             resp.status = falcon.HTTP_200
-            resp.media = { "error" : None }
+            resp.media = { "error" : None, cmd : value }
         except Exception400 as ex:
             resp.status = falcon.HTTP_400
             resp.media = { "error" : str(ex) }
