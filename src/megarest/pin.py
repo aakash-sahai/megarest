@@ -1,6 +1,6 @@
 import falcon
 import json
-from megapy import DigitalPin, AnalogPin
+from megapy import DigitalPin, AnalogPin, MegaException
 from app import MegaRestApp, Exception400
 import traceback
 
@@ -40,6 +40,9 @@ class PinResource(object):
         except Exception400 as ex:
             resp.status = falcon.HTTP_400
             resp.media = { "error" : str(ex) }
+        except MegaException as ex:
+            resp.status = falcon.HTTP_404
+            resp.media = { "error" : str(ex) }
         except Exception as ex:
             resp.status = falcon.HTTP_500
             resp.media = { "error" : str(ex), "trace": traceback.format_exc() }
@@ -68,6 +71,9 @@ class PinResource(object):
             resp.media = { "error" : None, "name" : thePin.name }
         except Exception400 as ex:
             resp.status = falcon.HTTP_400
+            resp.media = { "error" : str(ex) }
+        except MegaException as ex:
+            resp.status = falcon.HTTP_404
             resp.media = { "error" : str(ex) }
         except Exception as ex:
             resp.status = falcon.HTTP_500

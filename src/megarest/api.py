@@ -3,12 +3,18 @@ from megapy import ArduinoConnection
 from pin import PinResource
 from pushbutton import PushButtonResource
 from stepper import StepperResource
+from device import DeviceResource
 
 class MegaRestAPI(falcon.API):
 
     def __init__(self):
         falcon.API.__init__(self)
+        ArduinoConnection.print_ttys()
         self.connection = ArduinoConnection()
+        print("Auto selected device: " + str(self.connection.tty))
+
+        pr = DeviceResource(self.connection)
+        self.add_route('/api/device', pr)
 
         pr = PinResource(self.connection)
         self.add_route('/api/pin', pr)
